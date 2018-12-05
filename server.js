@@ -1,40 +1,36 @@
 /**
  * Require the credentials that you entered in the .env file
  */
-require('dotenv').config()
+require('dotenv').config();
 
-const Web3 = require('web3')
-const axios = require('axios')
-const EthereumTx = require('ethereumjs-tx')
+const Web3 = require('web3');
+const axios = require('axios');
+const EthereumTx = require('ethereumjs-tx');
 const log = require('ololog').configure({
     time: true
-})
-const ansi = require('ansicolor').nice
+});
+const ansi = require('ansicolor').nice;
 
 /**
  * Network configuration
  */
-var testnet = `https://rinkeby.infura.io/${process.env.INFURA_ACCESS_TOKEN}`
-
+let testnet = `https://rinkeby.infura.io/${process.env.INFURA_ACCESS_TOKEN}`;
 
 /**
  * Change the provider that is passed to HttpProvider to `mainnet` for live transactions.
  */
-var web3 = new Web3(new Web3.providers.HttpProvider(testnet))
-
+let web3 = new Web3(new Web3.providers.HttpProvider(testnet));
 
 /**
  * Set the web3 default account to use as your public wallet address
  */
-web3.eth.defaultAccount = process.env.WALLET_ADDRESS
-
+web3.eth.defaultAccount = process.env.WALLET_ADDRESS;
 
 /**
  * The amount of ETH you want to send in this transaction
  * @type {Number}
  */
-const amountToSend = 0.00100000
-
+const amountToSend = 0.00100000;
 
 /**
  * Fetch the current transaction gas prices from https://ethgasstation.info/
@@ -47,18 +43,18 @@ const getCurrentGasPrices = async () => {
         low: response.data.safeLow / 10,
         medium: response.data.average / 10,
         high: response.data.fast / 10
-    }
+    };
 
-    console.log("\r\n")
-    log(`Current ETH Gas Prices (in GWEI):`.cyan)
-    console.log("\r\n")
-    log(`Low: ${prices.low} (transaction completes in < 30 minutes)`.green)
-    log(`Standard: ${prices.medium} (transaction completes in < 5 minutes)`.yellow)
-    log(`Fast: ${prices.high} (transaction completes in < 2 minutes)`.red)
-    console.log("\r\n")
+    console.log("\r\n");
+    log(`Current ETH Gas Prices (in GWEI):`.cyan);
+    console.log("\r\n");
+    log(`Low: ${prices.low} (transaction completes in < 30 minutes)`.green);
+    log(`Standard: ${prices.medium} (transaction completes in < 5 minutes)`.yellow);
+    log(`Fast: ${prices.high} (transaction completes in < 2 minutes)`.red);
+    console.log("\r\n");
 
     return prices
-}
+};
 
 
 /**
@@ -70,24 +66,24 @@ function createTransaction(sellingUserWallet, buyerUserWallet, assetId) {
     /**
      * Fetch your personal wallet's balance
      */
-    let myBalanceWei = web3.eth.getBalance(web3.eth.defaultAccount).toNumber()
-    let myBalance = web3.fromWei(myBalanceWei, 'ether')
+    let myBalanceWei = web3.eth.getBalance(web3.eth.defaultAccount).toNumber();
+    let myBalance = web3.fromWei(myBalanceWei, 'ether');
 
-    log(`Your wallet balance is currently ${myBalance} ETH`.green)
+    log(`Your wallet balance is currently ${myBalance} ETH`.green);
 
 
     /**
      * With every new transaction you send using a specific wallet address,
      * you need to increase a nonce which is tied to the sender wallet.
      */
-    let nonce = web3.eth.getTransactionCount(web3.eth.defaultAccount)
-    log(`The outgoing transaction count for your wallet address is: ${nonce}`.magenta)
+    let nonce = web3.eth.getTransactionCount(web3.eth.defaultAccount);
+    log(`The outgoing transaction count for your wallet address is: ${nonce}`.magenta);
 
 
     /**
      * Fetch the current transaction gas prices from https://ethgasstation.info/
      */
-    let gasPrices = getCurrentGasPrices()
+    let gasPrices = getCurrentGasPrices();
 
 
     /**
@@ -101,22 +97,22 @@ function createTransaction(sellingUserWallet, buyerUserWallet, assetId) {
         "nonce": nonce,
         "data": assetId,
         "chainId": 4 // EIP 155 chainId - mainnet: 1, rinkeby: 4
-    }
+    };
 
-    var transaction = new EthereumTx(details)
+    let transaction = new EthereumTx(details);
 
 
     /**
      * This is where the transaction is authorized on your behalf.
      * The private key is what unlocks your wallet.
      */
-    transaction.sign(Buffer.from(sellingUserWallet, 'hex'))
+    transaction.sign(Buffer.from(sellingUserWallet, 'hex'));
 
 
     /**
      * Now, we'll compress the transaction info down into a transportable object.
      */
-    var serializedTransaction = transaction.serialize()
+    var serializedTransaction = transaction.serialize();
 
     /**
      * Note that the Web3 library is able to automatically determine the "from" address based on your private key.
@@ -128,34 +124,30 @@ function createTransaction(sellingUserWallet, buyerUserWallet, assetId) {
     /**
      * We're ready! Submit the raw transaction details to the provider configured above.
      */
-    const transactionId = web3.eth.sendRawTransaction('0x' + serializedTransaction.toString('hex'))
+    const transactionId = web3.eth.sendRawTransaction('0x' + serializedTransaction.toString('hex'));
 
     /**
      * We now know the transaction ID, so let's build the public Etherscan url where
      * the transaction details can be viewed.
      */
-    var url = `https://rinkeby.etherscan.io/tx/${transactionId}`
-    log(url.cyan)
+    var url = `https://rinkeby.etherscan.io/tx/${transactionId}`;
+    log(url.cyan);
 
-    log(`Note: please allow for 30 seconds before transaction appears on Etherscan`.magenta)
+    log(`Note: please allow for 30 seconds before transaction appears on Etherscan`.magenta);
     return url;
-    process.exit()
-
 }
 
-var express = require("express");
-var app = express();
+let express = require("express");
+let app = express();
 app.use(express.json());
 
 app.listen(3000, () => {
     console.log("Server running on port 3000");
 });
 
-
-
 app.post('/transacao', function (request, response) {
-    var data = request.body;
-    var url = createTransaction(process.env.WALLET_PRIVATE_KEY, data.destination_wallet, data.asset_id);
+    let data = request.body;
+    let url = createTransaction(process.env.WALLET_PRIVATE_KEY, data.destination_wallet, data.asset_id);
 
     response.send(url); // echo the result back
 });

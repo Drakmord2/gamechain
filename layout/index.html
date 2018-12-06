@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>GameChain</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/round-about.css" rel="stylesheet">
+</head>
+
+<body>
+
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="#">GameChain</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Home
+                        <span class="sr-only">(current)</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Services</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Page Content -->
+<div class="container">
+
+    <!-- Introduction Row -->
+    <h1 class="my-4">Order
+    </h1>
+
+    <!-- Team Members Row -->
+    <div class="row">
+        <div class="col text-center">
+            <img class="rounded-circle img-fluid d-block mx-auto" src="./images/avatar.png" alt="">
+            <h3>Gleby
+            </h3>
+        </div>
+        <div class="col text-center">
+            <img class="rounded-circle img-fluid d-block mx-auto" src="./images/Nick Herasimenka.png" alt="">
+
+        </div>
+        <div class="col text-center">
+            <img class="rounded-circle img-fluid d-block mx-auto" src="./images/Image 40.png" alt="">
+
+        </div>
+        <div class="col text-center">
+            <img class="rounded-circle img-fluid d-block mx-auto" src="./images/gun.png" alt="">
+            <h3>ARMA
+            </h3>
+        </div>
+        <div class="col text-center">
+            <img class="rounded-circle img-fluid d-block mx-auto" src="./images/avatar2.png" alt="">
+            <h3>Tonny
+            </h3>
+        </div>
+
+    </div>
+    <!-- Team Members Row -->
+    <div class="row">
+        <div class="col text-center pagar" style="cursor: pointer;">
+            <img class="rounded-circle img-fluid d-block mx-auto" src="./images/Image 41.png" alt="">
+        </div>
+        <div class="col text-center">
+            <img class="rounded-circle img-fluid d-block mx-auto" src="./images/Image 42.png" alt="">
+        </div>
+    </div>
+
+</div>
+</div>
+<!-- /.container -->
+
+<!-- Footer -->
+<footer class="py-5 bg-dark">
+    <div class="container">
+        <p class="m-0 text-center text-white">Copyright &copy; Your Website 2018</p>
+    </div>
+    <!-- /.container -->
+</footer>
+
+<!-- Bootstrap core JavaScript -->
+<script src="vendor/jquery/jquery.min.js"></script>
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    let settings = {
+        "async": true,
+        "crossDomain": true,
+        "url":      "http://localhost:3000/transacao",
+        "method":   "POST",
+        "headers":  {
+            "Content-Type": "application/json",
+            "cache-control": "no-cache"
+        },
+        "processData": false,
+        "data": "{\"destination_wallet\":\"0x0Eba37963a3EFe1D235603486C759672cf4F2ec6\",\"asset\":{\"id\":\"3aa7eaf3aa3bc942297d33a138225abc\",\"name\":\"arma de fogo ultra k5000 \"}}"
+    };
+
+    $('.pagar').click(function() {
+        $.ajax(settings).done(function (response) {
+            alert("Compra efetuada com sucesso!\n\nTransação: "+ response.transaction+"\nAsset: "+
+                JSON.stringify(response.asset)+"\nDe: "+response.seller+"\nPara: "+response.buyer);
+
+            window.open(response.etherscan, "_blank");
+        });
+    });
+</script>
+
+</body>
+</html>
